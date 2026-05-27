@@ -1,16 +1,18 @@
 import csv
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any
+
 from loguru import logger
+
 from ..models import Finding
 from .base import BaseParser
 
 
 class CSVParser(BaseParser):
-    def parse(self, file_path: Path) -> List[Finding]:
-        findings: List[Finding] = []
+    def parse(self, file_path: Path) -> list[Finding]:
+        findings: list[Finding] = []
         try:
-            with open(file_path, newline='', encoding='utf-8') as csvfile:
+            with open(file_path, newline="", encoding="utf-8") as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row_num, row in enumerate(reader, start=2):
                     try:
@@ -24,26 +26,26 @@ class CSVParser(BaseParser):
             logger.error(f"Error parsing CSV file {file_path}: {e}")
             raise
 
-    def _row_to_finding(self, row: Dict[str, Any]) -> Finding:
-        def safe_str(key: str) -> Optional[str]:
+    def _row_to_finding(self, row: dict[str, Any]) -> Finding:
+        def safe_str(key: str) -> str | None:
             val = row.get(key, "")
             return val.strip() if val else None
 
-        def safe_int(key: str) -> Optional[int]:
+        def safe_int(key: str) -> int | None:
             val = row.get(key, "")
             try:
                 return int(val) if val.strip() else None
             except ValueError:
                 return None
 
-        def safe_float(key: str) -> Optional[float]:
+        def safe_float(key: str) -> float | None:
             val = row.get(key, "")
             try:
                 return float(val) if val.strip() else None
             except ValueError:
                 return None
 
-        def safe_bool(key: str) -> Optional[bool]:
+        def safe_bool(key: str) -> bool | None:
             val = row.get(key, "")
             val_lower = val.lower().strip()
             if val_lower in ("yes", "true", "1"):
@@ -52,7 +54,7 @@ class CSVParser(BaseParser):
                 return False
             return None
 
-        def split_list(key: str, sep: str = ",") -> List[str]:
+        def split_list(key: str, sep: str = ",") -> list[str]:
             val = row.get(key, "")
             if not val:
                 return []

@@ -1,4 +1,3 @@
-import pytest
 from reportgen.models import Finding
 from reportgen.processors import aggregate_findings
 

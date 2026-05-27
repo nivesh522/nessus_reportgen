@@ -1,14 +1,15 @@
 from pathlib import Path
-from typing import List, Optional
+
 from loguru import logger
 from lxml import etree
+
 from ..models import Finding
 from .base import BaseParser
 
 
 class NessusXMLParser(BaseParser):
-    def parse(self, file_path: Path) -> List[Finding]:
-        findings: List[Finding] = []
+    def parse(self, file_path: Path) -> list[Finding]:
+        findings: list[Finding] = []
         try:
             tree = etree.parse(str(file_path))
             root = tree.getroot()
@@ -27,18 +28,18 @@ class NessusXMLParser(BaseParser):
             raise
 
     def _report_item_to_finding(self, item: etree._Element, host_ip: str) -> Finding:
-        def safe_str(path: str) -> Optional[str]:
+        def safe_str(path: str) -> str | None:
             elem = item.find(path)
             return elem.text.strip() if elem is not None and elem.text else None
 
-        def safe_int_attr(attr: str) -> Optional[int]:
+        def safe_int_attr(attr: str) -> int | None:
             val = item.get(attr, "")
             try:
                 return int(val) if val else None
             except ValueError:
                 return None
 
-        def safe_float_attr(attr: str) -> Optional[float]:
+        def safe_float_attr(attr: str) -> float | None:
             val = item.get(attr, "")
             try:
                 return float(val) if val else None

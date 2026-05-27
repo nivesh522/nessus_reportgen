@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Dict
 
 
 @dataclass
@@ -16,7 +15,7 @@ class Theme:
     info_bg: str
 
 
-THEMES: Dict[str, Theme] = {
+THEMES: dict[str, Theme] = {
     "corporate": Theme(
         name="Corporate Minimal",
         header_bg="4472C4",

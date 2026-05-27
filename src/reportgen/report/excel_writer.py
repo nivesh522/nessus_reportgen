@@ -1,11 +1,11 @@
 from pathlib import Path
-from typing import List, Dict, Optional
+
 from loguru import logger
 from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
-from openpyxl.utils import get_column_letter
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+
 from ..models import Finding
-from .themes import Theme, get_theme
+from .themes import Theme
 
 
 class ExcelReportWriter:
@@ -13,9 +13,13 @@ class ExcelReportWriter:
         self.theme = theme
         self.wb = Workbook()
         self.header_font = Font(bold=True, color=theme.header_font)
-        self.header_fill = PatternFill(start_color=theme.header_bg, end_color=theme.header_bg, fill_type="solid")
+        self.header_fill = PatternFill(
+            start_color=theme.header_bg, end_color=theme.header_bg, fill_type="solid"
+        )
         self.cell_font = Font(color=theme.cell_font)
-        self.cell_fill = PatternFill(start_color=theme.cell_bg, end_color=theme.cell_bg, fill_type="solid")
+        self.cell_fill = PatternFill(
+            start_color=theme.cell_bg, end_color=theme.cell_bg, fill_type="solid"
+        )
         self.alignment = Alignment(wrap_text=True, vertical="top", horizontal="left")
         self.thin_border = Border(
             left=Side(style="thin"),
@@ -24,7 +28,7 @@ class ExcelReportWriter:
             bottom=Side(style="thin"),
         )
 
-    def write(self, output_path: Path, findings: List[Finding]) -> None:
+    def write(self, output_path: Path, findings: list[Finding]) -> None:
         if "Sheet" in self.wb.sheetnames:
             del self.wb["Sheet"]
 
@@ -36,11 +40,11 @@ class ExcelReportWriter:
         self.wb.save(str(output_path))
         logger.info(f"Report written to {output_path}")
 
-    def _create_executive_summary(self, findings: List[Finding]) -> None:
+    def _create_executive_summary(self, findings: list[Finding]) -> None:
         ws = self.wb.create_sheet("Executive Summary")
         ws.title = "Executive Summary"
 
-        severity_counts: Dict[str, int] = {
+        severity_counts: dict[str, int] = {
             "Critical": 0,
             "High": 0,
             "Medium": 0,
@@ -82,7 +86,9 @@ class ExcelReportWriter:
                 "Low": self.theme.low_bg,
                 "Info": self.theme.info_bg,
             }
-            cell_sev.fill = PatternFill(start_color=bg_map[sev], end_color=bg_map[sev], fill_type="solid")
+            cell_sev.fill = PatternFill(
+                start_color=bg_map[sev], end_color=bg_map[sev], fill_type="solid"
+            )
             row_num += 1
 
         for col in ws.columns:
@@ -97,14 +103,21 @@ class ExcelReportWriter:
             adjusted_width = (max_length + 2) * 1.5
             ws.column_dimensions[column].width = adjusted_width
 
-    def _create_host_summary(self, findings: List[Finding]) -> None:
+    def _create_host_summary(self, findings: list[Finding]) -> None:
         ws = self.wb.create_sheet("Host Summary")
 
-        host_data: Dict[str, Dict[str, int]] = {}
+        host_data: dict[str, dict[str, int]] = {}
         for f in findings:
             for ip in f.affected_ips:
                 if ip not in host_data:
-                    host_data[ip] = {"Total": 0, "Critical": 0, "High": 0, "Medium": 0, "Low": 0, "Info": 0}
+                    host_data[ip] = {
+                        "Total": 0,
+                        "Critical": 0,
+                        "High": 0,
+                        "Medium": 0,
+                        "Low": 0,
+                        "Info": 0,
+                    }
                 host_data[ip]["Total"] += 1
                 sev = f.severity.capitalize()
                 if sev in host_data[ip]:
@@ -123,7 +136,9 @@ class ExcelReportWriter:
 
         row_num = 2
         for host, data in sorted(host_data.items()):
-            ws.append([host, data["Total"], data["Critical"], data["High"], data["Medium"], data["Low"]])
+            ws.append(
+                [host, data["Total"], data["Critical"], data["High"], data["Medium"], data["Low"]]
+            )
             for col_num in range(1, 7):
                 cell = ws.cell(row=row_num, column=col_num)
                 cell.font = self.cell_font
@@ -144,7 +159,7 @@ class ExcelReportWriter:
             adjusted_width = (max_length + 2) * 1.5
             ws.column_dimensions[column].width = adjusted_width
 
-    def _create_findings_sheet(self, findings: List[Finding]) -> None:
+    def _create_findings_sheet(self, findings: list[Finding]) -> None:
         ws = self.wb.create_sheet("Findings")
 
         row_num = 1
@@ -157,7 +172,10 @@ class ExcelReportWriter:
                 ("Description", finding.description or "N/A"),
                 ("Solution", finding.solution or "N/A"),
                 ("CVE numbers", ", ".join(finding.cves) if finding.cves else "N/A"),
-                ("Affected IP addresses", ", ".join(finding.affected_ips) if finding.affected_ips else "N/A"),
+                (
+                    "Affected IP addresses",
+                    ", ".join(finding.affected_ips) if finding.affected_ips else "N/A",
+                ),
             ]
 
             for label, value in fields:
@@ -181,7 +199,7 @@ class ExcelReportWriter:
         ws.column_dimensions["A"].width = 25
         ws.column_dimensions["B"].width = 80
 
-    def _create_severity_sheets(self, findings: List[Finding]) -> None:
+    def _create_severity_sheets(self, findings: list[Finding]) -> None:
         severities = ["Critical", "High", "Medium", "Low", "Info"]
         for sev in severities:
             ws = self.wb.create_sheet(sev)
@@ -200,7 +218,10 @@ class ExcelReportWriter:
                     ("Description", finding.description or "N/A"),
                     ("Solution", finding.solution or "N/A"),
                     ("CVE numbers", ", ".join(finding.cves) if finding.cves else "N/A"),
-                    ("Affected IP addresses", ", ".join(finding.affected_ips) if finding.affected_ips else "N/A"),
+                    (
+                        "Affected IP addresses",
+                        ", ".join(finding.affected_ips) if finding.affected_ips else "N/A",
+                    ),
                 ]
 
                 for label, value in fields:

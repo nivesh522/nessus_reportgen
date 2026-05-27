@@ -1,7 +1,8 @@
-import typer
 from pathlib import Path
-from typing import Optional, List
+
+import typer
 from loguru import logger
+
 from . import __version__
 from .parsers import CSVParser, NessusXMLParser
 from .processors import aggregate_findings
@@ -23,8 +24,13 @@ def version_callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: Optional[bool] = typer.Option(
-        None, "--version", "-v", callback=version_callback, is_eager=True, help="Show version and exit"
+    version: bool | None = typer.Option(
+        None,
+        "--version",
+        "-v",
+        callback=version_callback,
+        is_eager=True,
+        help="Show version and exit",
     ),
 ) -> None:
     pass
@@ -35,11 +41,15 @@ def generate(
     input_path: str = typer.Argument(..., help="Input file or directory (CSV or Nessus XML)"),
     output_path: str = typer.Argument(..., help="Output file (.xlsx or .docx)"),
     format: str = typer.Option("auto", "--format", "-f", help="Output format (auto/excel/word)"),
-    theme: str = typer.Option("corporate", "--theme", "-t", help="Report theme for Excel (corporate/dark)"),
-    template: Optional[str] = typer.Option(None, "--template", help="Word template file (.docx)"),
-    min_severity: str = typer.Option("info", "--min-severity", help="Minimum severity to include (info/low/medium/high/critical)"),
+    theme: str = typer.Option(
+        "corporate", "--theme", "-t", help="Report theme for Excel (corporate/dark)"
+    ),
+    template: str | None = typer.Option(None, "--template", help="Word template file (.docx)"),
+    min_severity: str = typer.Option(
+        "info", "--min-severity", help="Minimum severity to include (info/low/medium/high/critical)"
+    ),
     verbose: bool = typer.Option(False, "--verbose", help="Enable verbose logging"),
-    log_file: Optional[str] = typer.Option(None, "--log-file", help="Log file path"),
+    log_file: str | None = typer.Option(None, "--log-file", help="Log file path"),
 ) -> None:
     setup_logger(verbose=verbose, log_file=log_file)
     logger.info("Starting report generation")
@@ -47,7 +57,7 @@ def generate(
     input_p = Path(input_path)
     output_p = Path(output_path)
 
-    findings: List[any] = []
+    findings: list[any] = []
     if input_p.is_file():
         findings = _parse_single_file(input_p)
     elif input_p.is_dir():
@@ -96,7 +106,7 @@ def generate(
     logger.success(f"Report generated successfully: {output_path}")
 
 
-def _parse_single_file(file_path: Path) -> List[any]:
+def _parse_single_file(file_path: Path) -> list[any]:
     validate_file_path(str(file_path), must_exist=True)
     ext = file_path.suffix.lower()
     if ext == ".csv":
@@ -109,7 +119,7 @@ def _parse_single_file(file_path: Path) -> List[any]:
     return parser.parse(file_path)
 
 
-def _parse_directory(dir_path: Path) -> List[any]:
+def _parse_directory(dir_path: Path) -> list[any]:
     findings = []
     csv_files = list(dir_path.glob("*.csv"))
     nessus_files = list(dir_path.glob("*.nessus"))

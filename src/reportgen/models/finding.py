@@ -1,36 +1,35 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Finding(BaseModel):
-    plugin_id: Optional[int] = None
-    title: str
-    synopsis: Optional[str] = None
-    description: Optional[str] = None
-    solution: Optional[str] = None
-    see_also: Optional[str] = None
-    severity: str
-    risk: Optional[str] = None
-    ports: List[str] = Field(default_factory=list)
-    affected_ips: List[str] = Field(default_factory=list)
-    protocol: Optional[str] = None
-    cves: List[str] = Field(default_factory=list)
-    cvss_v2: Optional[float] = None
-    cvss_v3: Optional[float] = None
-    cvss_v4: Optional[float] = None
-    vpr_score: Optional[float] = None
-    epss_score: Optional[float] = None
-    plugin_output: Optional[str] = None
-    plugin_publication_date: Optional[str] = None
-    plugin_modification_date: Optional[str] = None
-    metasploit: Optional[bool] = None
-    canvas: Optional[bool] = None
-    core_impact: Optional[bool] = None
-    risk_factor: Optional[str] = None
-    bid: List[str] = Field(default_factory=list)
-    xref: List[str] = Field(default_factory=list)
-    mskb: List[str] = Field(default_factory=list)
-    stig_severity: Optional[str] = None
+    model_config = ConfigDict(frozen=False)
 
-    class Config:
-        frozen = False
+    plugin_id: int | None = None
+    title: str
+    synopsis: str | None = None
+    description: str | None = None
+    solution: str | None = None
+    see_also: str | None = None
+    severity: str
+    risk: str | None = None
+    ports: list[str] = Field(default_factory=list)
+    affected_ips: list[str] = Field(default_factory=list)
+    protocol: str | None = None
+    cves: list[str] = Field(default_factory=list)
+    cvss_v2: float | None = None
+    cvss_v3: float | None = None
+    cvss_v4: float | None = None
+    vpr_score: float | None = None
+    epss_score: float | None = None
+    plugin_output: str | None = None
+    plugin_publication_date: str | None = None
+    plugin_modification_date: str | None = None
+    metasploit: bool | None = None
+    canvas: bool | None = None
+    core_impact: bool | None = None
+    risk_factor: str | None = None
+    bid: list[str] = Field(default_factory=list)
+    xref: list[str] = Field(default_factory=list)
+    mskb: list[str] = Field(default_factory=list)
+    stig_severity: str | None = None

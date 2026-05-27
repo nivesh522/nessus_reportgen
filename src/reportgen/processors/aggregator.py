@@ -1,10 +1,11 @@
-from typing import List, Dict, Tuple, Set
 from loguru import logger
+from typing import Optional
+
 from ..models import Finding
 
 
-def aggregate_findings(findings: List[Finding]) -> List[Finding]:
-    grouped: Dict[Tuple[Optional[int], Optional[str]], Finding] = {}
+def aggregate_findings(findings: list[Finding]) -> list[Finding]:
+    grouped: dict[tuple[Optional[int], Optional[str]], Finding] = {}
 
     for finding in findings:
         key = (finding.plugin_id, finding.synopsis)
