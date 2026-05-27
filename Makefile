@@ -28,7 +28,6 @@ clean:
 	rm -rf dist
 	rm -rf build
 	rm -rf *.egg-info
-	rm -rf *.spec
 	rm -rf .mypy_cache
 	find . -type d -name __pycache__ -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
