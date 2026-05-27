@@ -7,7 +7,7 @@ name = "nessus-reportgen"
 version = "0.1.0"
 description = "Enterprise-grade Nessus vulnerability scan report generator"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10, <3.15"
 license = {text = "MIT"}
 authors = [
     {name = "Nivesh Pritmani", email = "niveshp.work@gmail.com"}
@@ -22,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Security",
 ]
 dependencies = [
