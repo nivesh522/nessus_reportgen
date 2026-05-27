@@ -54,9 +54,7 @@ packages = ["src/reportgen"]
 name = "nessus-reportgen"
 version = "0.1.0"
 description = "Enterprise-grade Nessus vulnerability scan report generator"
-authors = [
-    { name = "Nivesh Pritmani", email = "niveshp.work@gmail.com" },
-]
+authors = ["Nivesh Pritmani <niveshp.work@gmail.com>"]
 readme = "README.md"
 license = "MIT"
 keywords = ["nessus", "vulnerability", "reporting", "security"]
