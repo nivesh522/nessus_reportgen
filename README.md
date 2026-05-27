@@ -2,12 +2,26 @@
 
 Enterprise-grade Nessus vulnerability scan report generator that converts Nessus CSV and .nessus XML exports into professional Excel and Word reports.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## Table of Contents
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [User Guide](#user-guide)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Developer Guide](#developer-guide)
+- [Cross-Platform Building](#cross-platform-building--packaging)
+- [Project Structure](#project-structure)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
+
 ## Features
 
 - **Unified Parsing Layer**: Supports both Nessus CSV exports and native .nessus XML files
 - **Canonical Finding Model**: Uses Pydantic for type-safe data validation
 - **Smart Deduplication**: Aggregates findings by (plugin_id, synopsis) to avoid duplicates
-- **Professional Excel Reports**: 
+- **Professional Excel Reports**:
   - Executive Summary
   - Host Summary
   - Detailed Findings
@@ -24,31 +38,31 @@ Enterprise-grade Nessus vulnerability scan report generator that converts Nessus
 - **Robust Error Handling**: Validates inputs and provides meaningful error messages
 - **Cross-Platform Support**: Buildable for Windows, macOS, and Linux
 
-## Installation
-
-### From PyPI (coming soon)
+## Quick Start
 
 ```bash
-pip install nessus-reportgen
-```
-
-### From Source
-
-```bash
+# Clone the repository
 git clone <repository-url>
 cd nessus-reportgen
-pip install -e .
+
+# Install with Poetry
+poetry install
+
+# Generate your first report
+poetry run nessus-reportgen generate scan.csv report.xlsx
 ```
 
-### Development Installation
+## User Guide
 
-```bash
-pip install -e ".[dev]"
-```
+### Supported Input Formats
 
-## Usage
+nessus-reportgen supports two input formats:
+1. **Nessus CSV Exports**: Standard CSV files exported from Nessus
+2. **.nessus XML Files**: Native Nessus XML scan outputs
 
-### Basic Usage
+### Generating Reports
+
+#### Basic Usage
 
 ```bash
 # Convert a single CSV file to Excel
@@ -68,7 +82,7 @@ nessus-reportgen generate scans/ merged-report.xlsx
 nessus-reportgen generate scans/ merged-report.docx
 ```
 
-### Advanced Options
+#### Advanced Options
 
 ```bash
 # Excel report with dark theme
@@ -87,7 +101,7 @@ nessus-reportgen generate scan.csv report.xlsx --verbose
 nessus-reportgen generate scan.csv report.xlsx --log-file reportgen.log
 ```
 
-### CLI Reference
+#### CLI Reference
 
 ```
 nessus-reportgen generate [OPTIONS] INPUT_PATH OUTPUT_PATH
@@ -103,7 +117,7 @@ Options:
   --help                   Show this message and exit
 ```
 
-## Word Report Styling
+### Word Report Styling
 
 The Word report generator uses the following color scheme:
 
@@ -116,49 +130,51 @@ The Word report generator uses the following color scheme:
 | Low Severity          | #9BBB59     |
 | Informational         | #4BACC6     |
 
-## Cross-Platform Building & Packaging
+## Installation
 
 ### Prerequisites
-All platforms require Python 3.10 or later.
+- Python 3.10 or later
+- pip or Poetry
 
-### Install Dependencies
-Install development dependencies on any platform:
+### From PyPI (coming soon)
+
 ```bash
-pip install -e ".[dev]"
+pip install nessus-reportgen
 ```
 
-### Build Python Package (All Platforms)
-This builds a source distribution and a wheel:
+### From Source (Using pip)
+
 ```bash
-make build
-# or manually:
-python -m build
+git clone <repository-url>
+cd nessus-reportgen
+pip install -e .
 ```
 
-### Build Standalone Executable
+### From Source (Using Poetry) - Recommended
 
-#### Linux / macOS
 ```bash
-make build-exe
-# or with the spec file:
-make build-exe-spec
+git clone <repository-url>
+cd nessus-reportgen
+poetry install
 ```
-This creates a single-file executable in `dist/`.
 
-#### Windows (PowerShell or Command Prompt)
-```powershell
-# Using PowerShell
-pyinstaller --clean --onefile --name nessus-reportgen src\reportgen\cli.py
+## Developer Guide
 
-# Or with the spec file:
-pyinstaller --clean nessus-reportgen.spec
+### Development Setup
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd nessus-reportgen
+
+# Install development dependencies
+poetry install --with dev
+
+# Verify installation
+poetry run nessus-reportgen --version
 ```
-This creates `nessus-reportgen.exe` in `dist\`.
 
-### Cross-Compiling Executables
-To build Windows executables on Linux/macOS, use **Wine** + **PyInstaller** (advanced).
-
-## Project Structure
+### Project Layout
 
 ```
 nessus-reportgen/
@@ -166,6 +182,7 @@ nessus-reportgen/
 ├── README.md               # This file
 ├── LICENSE
 ├── Makefile                # Development and build commands
+├── poetry.lock             # Poetry lock file (committed for reproducibility)
 ├── nessus-reportgen.spec   # PyInstaller spec file
 │
 ├── src/reportgen/
@@ -193,9 +210,8 @@ nessus-reportgen/
 │       └── validators.py       # Input validators
 │
 └── tests/
+    └── test_aggregator.py
 ```
-
-## Development
 
 ### Linting and Formatting
 
@@ -210,16 +226,68 @@ make format
 ### Testing
 
 ```bash
-# Run tests
+# Run all tests
 make test
 
 # Run tests with coverage
 make test-cov
 ```
 
-### Clean Build Files
+### Cleanup
+
 ```bash
 make clean
+```
+
+## Cross-Platform Building & Packaging
+
+### Prerequisites
+All platforms require Python 3.10 or later.
+
+### Build Python Package (All Platforms)
+This builds a source distribution and a wheel:
+```bash
+make build
+# or manually:
+poetry run python -m build
+```
+
+### Build Standalone Executable
+
+#### Linux / macOS
+```bash
+make build-exe
+# or with the spec file:
+make build-exe-spec
+```
+This creates a single-file executable in `dist/`.
+
+#### Windows (PowerShell or Command Prompt)
+```powershell
+# Using PowerShell
+poetry run pyinstaller --clean --onefile --name nessus-reportgen src\reportgen\cli.py
+
+# Or with the spec file:
+poetry run pyinstaller --clean nessus-reportgen.spec
+```
+This creates `nessus-reportgen.exe` in `dist\`.
+
+### Cross-Compiling Executables
+To build Windows executables on Linux/macOS, use **Wine** + **PyInstaller** (advanced).
+
+## Troubleshooting
+
+### Poetry Installation Issues
+If you encounter dependency resolution errors, try:
+```bash
+poetry lock --no-update
+poetry install
+```
+
+### PyInstaller Build Errors
+Ensure you're using Python <3.15 and have all dependencies installed:
+```bash
+poetry install --with dev
 ```
 
 ## License
