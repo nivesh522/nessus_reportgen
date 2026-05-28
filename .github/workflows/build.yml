@@ -2,7 +2,7 @@ name: Build Binaries
 
 on:
   push:
-    branches: [master]
+    branches: [master, main]
     tags:
       - 'v*'
 
