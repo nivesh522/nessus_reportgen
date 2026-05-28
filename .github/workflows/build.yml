@@ -1,4 +1,4 @@
-name: Build Binaries
+name: Build Binaries and Release
 
 on:
   push:
@@ -46,10 +46,44 @@ jobs:
       run: |
         poetry run pyinstaller --clean --onefile --name nessus-reportgen src/reportgen/cli.py
 
+    - name: Prepare release assets
+      run: |
+        cd dist
+        if [ "${{ matrix.os }}" = "windows-latest" ]; then
+          mv nessus-reportgen.exe nessus-reportgen-windows.exe
+        elif [ "${{ matrix.os }}" = "macos-latest" ]; then
+          mv nessus-reportgen nessus-reportgen-macos
+        else
+          mv nessus-reportgen nessus-reportgen-linux
+        fi
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: nessus-reportgen-${{ matrix.os }}
-        path: |
-          dist/nessus-reportgen
-          dist/nessus-reportgen.exe
+        path: dist/nessus-reportgen-*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./artifacts/
+
+    - name: Display structure of downloaded files
+      run: ls -laR ./artifacts
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          ./artifacts/nessus-reportgen-ubuntu-latest/nessus-reportgen-linux
+          ./artifacts/nessus-reportgen-windows-latest/nessus-reportgen-windows.exe
+          ./artifacts/nessus-reportgen-macos-latest/nessus-reportgen-macos
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
