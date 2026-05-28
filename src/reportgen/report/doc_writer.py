@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from docx import Document
-from docx.oxml import parse_xml, qn
+from docx.oxml import parse_xml
 from docx.shared import Pt, RGBColor
 from loguru import logger
 
@@ -185,7 +185,7 @@ class WordReportWriter:
                 all_ips.add(ip)
                 if ip not in host_ports:
                     host_ports[ip] = []
-                host_ports[ip].extend(finding.ports)
+                host_ports[ip].extend(f.ports)
         for ip in host_ports:
             host_ports[ip] = sorted(list(set(host_ports[ip])))
 

@@ -47,6 +47,8 @@ class CSVParser(BaseParser):
 
         def safe_bool(key: str) -> bool | None:
             val = row.get(key, "")
+            if not val:
+                return None
             val_lower = val.lower().strip()
             if val_lower in ("yes", "true", "1"):
                 return True
