@@ -2,6 +2,7 @@ name: Build Binaries
 
 on:
   push:
+    branches: [master]
     tags:
       - 'v*'
 
@@ -22,9 +23,11 @@ jobs:
         python-version: '3.10'
 
     - name: Install Poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
-        echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: false
 
     - name: Install dependencies
       run: |
@@ -38,4 +41,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: nessus-reportgen-${{ matrix.os }}
-        path: dist/nessus-reportgen*
+        path: |
+          dist/nessus-reportgen
+          dist/nessus-reportgen.exe
