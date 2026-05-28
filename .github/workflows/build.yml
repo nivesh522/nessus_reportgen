@@ -2,7 +2,7 @@ name: Build Binaries
 
 on:
   push:
-    branches: [master, main]
+    branches: [main]
     tags:
       - 'v*'
 
@@ -13,6 +13,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+
+    defaults:
+      run:
+        shell: bash
 
     steps:
     - uses: actions/checkout@v4
@@ -28,6 +32,11 @@ jobs:
         version: latest
         virtualenvs-create: true
         virtualenvs-in-project: false
+        installer-parallel: true
+
+    - name: Verify Poetry Installation
+      run: |
+        poetry --version
 
     - name: Install dependencies
       run: |
