@@ -16,6 +16,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, windows-latest, macos-latest]
+        arch: [x64, arm64]
+        exclude:
+          - os: windows-latest
+            arch: arm64  # Windows ARM64 support can be added later if needed
 
     defaults:
       run:
@@ -28,6 +32,7 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
+        architecture: ${{ matrix.arch }}
 
     - name: Install Poetry
       uses: snok/install-poetry@v1
@@ -53,17 +58,17 @@ jobs:
       run: |
         cd dist
         if [ "${{ matrix.os }}" = "windows-latest" ]; then
-          mv nessus-reportgen.exe nessus-reportgen-windows.exe
+          mv nessus-reportgen.exe nessus-reportgen-windows-${{ matrix.arch }}.exe
         elif [ "${{ matrix.os }}" = "macos-latest" ]; then
-          mv nessus-reportgen nessus-reportgen-macos
+          mv nessus-reportgen nessus-reportgen-macos-${{ matrix.arch }}
         else
-          mv nessus-reportgen nessus-reportgen-linux
+          mv nessus-reportgen nessus-reportgen-linux-${{ matrix.arch }}
         fi
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: nessus-reportgen-${{ matrix.os }}
+        name: nessus-reportgen-${{ matrix.os }}-${{ matrix.arch }}
         path: dist/nessus-reportgen-*
 
   release:
@@ -83,9 +88,11 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          ./artifacts/nessus-reportgen-ubuntu-22.04/nessus-reportgen-linux
-          ./artifacts/nessus-reportgen-windows-latest/nessus-reportgen-windows.exe
-          ./artifacts/nessus-reportgen-macos-latest/nessus-reportgen-macos
+          ./artifacts/nessus-reportgen-ubuntu-22.04-x64/nessus-reportgen-linux-x64
+          ./artifacts/nessus-reportgen-ubuntu-22.04-arm64/nessus-reportgen-linux-arm64
+          ./artifacts/nessus-reportgen-windows-latest-x64/nessus-reportgen-windows-x64.exe
+          ./artifacts/nessus-reportgen-macos-latest-x64/nessus-reportgen-macos-x64
+          ./artifacts/nessus-reportgen-macos-latest-arm64/nessus-reportgen-macos-arm64
         draft: false
         prerelease: false
       env:

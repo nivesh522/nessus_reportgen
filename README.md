@@ -134,10 +134,17 @@ The Word report generator uses the following color scheme:
 
 ### From Pre-Built Binaries (Recommended for End Users)
 
-Download the appropriate binary for your platform from the [GitHub Releases](https://github.com/[your-username]/nessus-reportgen/releases) page:
+Download the appropriate binary for your platform and architecture from the [GitHub Releases](https://github.com/[your-username]/nessus-reportgen/releases) page:
+
+#### Check Your System Architecture
+First, determine your system architecture:
+- **Linux/macOS**: Run `uname -m` in terminal
+  - `x86_64` or `amd64` → Use `x64` binary
+  - `aarch64` or `arm64` → Use `arm64` binary
+- **Windows**: Open System Information → Look for "System Type"
 
 #### Windows
-1. Download `nessus-reportgen-windows.exe`
+1. Download `nessus-reportgen-windows-x64.exe`
 2. You can rename it to `nessus-reportgen.exe` for convenience
 3. Open Command Prompt or PowerShell and navigate to the download directory
 4. Run the executable directly:
@@ -150,42 +157,54 @@ Download the appropriate binary for your platform from the [GitHub Releases](htt
    ```
 
 #### Linux
-1. Download `nessus-reportgen-linux`
+1. Download the appropriate binary:
+   - For x86-64 (most PCs): `nessus-reportgen-linux-x64`
+   - For ARM64 (Raspberry Pi, AWS Graviton, etc.): `nessus-reportgen-linux-arm64`
 2. Make it executable:
    ```bash
-   chmod +x nessus-reportgen-linux
+   chmod +x nessus-reportgen-linux-*
    ```
 3. Optionally, move it to a directory in your PATH (like `/usr/local/bin`):
    ```bash
-   sudo mv nessus-reportgen-linux /usr/local/bin/nessus-reportgen
+   sudo mv nessus-reportgen-linux-x64 /usr/local/bin/nessus-reportgen
+   # or for ARM64
+   sudo mv nessus-reportgen-linux-arm64 /usr/local/bin/nessus-reportgen
    ```
 4. Run it:
    ```bash
    # Show help
-   ./nessus-reportgen-linux --help
+   ./nessus-reportgen-linux-x64 --help
+   # or for ARM64
+   ./nessus-reportgen-linux-arm64 --help
    
    # Generate a report
-   ./nessus-reportgen-linux generate scan.csv report.xlsx
+   ./nessus-reportgen-linux-x64 generate scan.csv report.xlsx
    ```
 
 #### macOS
-1. Download `nessus-reportgen-macos`
+1. Download the appropriate binary:
+   - For Intel Macs: `nessus-reportgen-macos-x64`
+   - For Apple Silicon (M1/M2/M3): `nessus-reportgen-macos-arm64`
 2. Make it executable:
    ```bash
-   chmod +x nessus-reportgen-macos
+   chmod +x nessus-reportgen-macos-*
    ```
 3. If you get a security warning, right-click and select "Open" (or go to System Settings > Privacy & Security)
 4. Optionally, move it to a directory in your PATH:
    ```bash
-   sudo mv nessus-reportgen-macos /usr/local/bin/nessus-reportgen
+   sudo mv nessus-reportgen-macos-x64 /usr/local/bin/nessus-reportgen
+   # or for ARM64
+   sudo mv nessus-reportgen-macos-arm64 /usr/local/bin/nessus-reportgen
    ```
 5. Run it:
    ```bash
    # Show help
-   ./nessus-reportgen-macos --help
+   ./nessus-reportgen-macos-x64 --help
+   # or for ARM64
+   ./nessus-reportgen-macos-arm64 --help
    
    # Generate a report
-   ./nessus-reportgen-macos generate scan.csv report.xlsx
+   ./nessus-reportgen-macos-x64 generate scan.csv report.xlsx
    ```
 
 ### From PyPI (coming soon)
