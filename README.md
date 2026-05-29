@@ -132,9 +132,61 @@ The Word report generator uses the following color scheme:
 
 ## Installation
 
-### Prerequisites
-- Python 3.10 or later
-- pip or Poetry
+### From Pre-Built Binaries (Recommended for End Users)
+
+Download the appropriate binary for your platform from the [GitHub Releases](https://github.com/[your-username]/nessus-reportgen/releases) page:
+
+#### Windows
+1. Download `nessus-reportgen-windows.exe`
+2. You can rename it to `nessus-reportgen.exe` for convenience
+3. Open Command Prompt or PowerShell and navigate to the download directory
+4. Run the executable directly:
+   ```powershell
+   # Show help
+   .\nessus-reportgen.exe --help
+   
+   # Generate a report
+   .\nessus-reportgen.exe generate scan.csv report.xlsx
+   ```
+
+#### Linux
+1. Download `nessus-reportgen-linux`
+2. Make it executable:
+   ```bash
+   chmod +x nessus-reportgen-linux
+   ```
+3. Optionally, move it to a directory in your PATH (like `/usr/local/bin`):
+   ```bash
+   sudo mv nessus-reportgen-linux /usr/local/bin/nessus-reportgen
+   ```
+4. Run it:
+   ```bash
+   # Show help
+   ./nessus-reportgen-linux --help
+   
+   # Generate a report
+   ./nessus-reportgen-linux generate scan.csv report.xlsx
+   ```
+
+#### macOS
+1. Download `nessus-reportgen-macos`
+2. Make it executable:
+   ```bash
+   chmod +x nessus-reportgen-macos
+   ```
+3. If you get a security warning, right-click and select "Open" (or go to System Settings > Privacy & Security)
+4. Optionally, move it to a directory in your PATH:
+   ```bash
+   sudo mv nessus-reportgen-macos /usr/local/bin/nessus-reportgen
+   ```
+5. Run it:
+   ```bash
+   # Show help
+   ./nessus-reportgen-macos --help
+   
+   # Generate a report
+   ./nessus-reportgen-macos generate scan.csv report.xlsx
+   ```
 
 ### From PyPI (coming soon)
 
@@ -276,6 +328,19 @@ This creates `nessus-reportgen.exe` in `dist\`.
 To build Windows executables on Linux/macOS, use **Wine** + **PyInstaller** (advanced).
 
 ## Troubleshooting
+
+### Binary Issues
+
+#### Linux: "GLIBC_2.XX not found"
+This happens when the binary was built on a system with a newer GLIBC version than your system. The GitHub Release binaries are built on Ubuntu 22.04 (GLIBC 2.35), which should be compatible with most modern Linux distributions. If you still encounter issues, you can build the binary from source on your system.
+
+#### macOS: Security Warning
+macOS may block the binary because it's from an unidentified developer. To fix:
+1. Right-click the binary and select "Open"
+2. Or go to **System Settings > Privacy & Security** and click "Open Anyway"
+
+#### Windows: SmartScreen Warning
+Windows SmartScreen may block the executable. Click "More info" and then "Run anyway".
 
 ### Poetry Installation Issues
 If you encounter dependency resolution errors, try:
