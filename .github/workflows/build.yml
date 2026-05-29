@@ -19,8 +19,8 @@ jobs:
           - os: ubuntu-22.04
             arch: x64
             binary_name: nessus-reportgen-linux-x64
-          - os: macos-13  # macOS 13 is the last Intel macOS runner with x64 support
-            arch: x64
+          - os: ubuntu-22.04 
+            arch: arm64
             binary_name: nessus-reportgen-macos-x64
           - os: macos-latest
             arch: arm64
