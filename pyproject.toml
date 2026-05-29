@@ -56,7 +56,7 @@ exclude = ["example/**"]
 
 [tool.poetry]
 name = "nessus-reportgen"
-version = "v1.0.0"
+version = "v1.1.0"
 description = "Enterprise-grade Nessus vulnerability scan report generator"
 authors = ["Nivesh Pritmani <niveshp.work@gmail.com>"]
 readme = "README.md"
