@@ -1,13 +1,21 @@
+import sys
 from pathlib import Path
 
 import typer
 from loguru import logger
 
-from . import __version__
-from .parsers import CSVParser, NessusXMLParser
-from .processors import aggregate_findings
-from .report import ExcelReportWriter, WordReportWriter, get_theme
-from .utils import setup_logger, validate_file_path
+try:
+    from . import __version__
+    from .parsers import CSVParser, NessusXMLParser
+    from .processors import aggregate_findings
+    from .report import ExcelReportWriter, WordReportWriter, get_theme
+    from .utils import setup_logger, validate_file_path
+except ImportError:
+    from reportgen import __version__
+    from reportgen.parsers import CSVParser, NessusXMLParser
+    from reportgen.processors import aggregate_findings
+    from reportgen.report import ExcelReportWriter, WordReportWriter, get_theme
+    from reportgen.utils import setup_logger, validate_file_path
 
 app = typer.Typer(
     name="nessus-reportgen",
