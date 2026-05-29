@@ -158,8 +158,8 @@ First, determine your system architecture:
 
 #### Linux
 1. Download the appropriate binary:
-   - For x86-64 (most PCs): `nessus-reportgen-linux-x64`
-   - For ARM64 (Raspberry Pi, AWS Graviton, etc.): `nessus-reportgen-linux-arm64`
+   - For x86-64 (most PCs): `nessus-reportgen-linux-x64` (available in GitHub Releases)
+   - For ARM64 (Raspberry Pi, AWS Graviton, etc.): Build from source (see "From Source" below)
 2. Make it executable:
    ```bash
    chmod +x nessus-reportgen-linux-*
@@ -167,15 +167,11 @@ First, determine your system architecture:
 3. Optionally, move it to a directory in your PATH (like `/usr/local/bin`):
    ```bash
    sudo mv nessus-reportgen-linux-x64 /usr/local/bin/nessus-reportgen
-   # or for ARM64
-   sudo mv nessus-reportgen-linux-arm64 /usr/local/bin/nessus-reportgen
    ```
 4. Run it:
    ```bash
    # Show help
    ./nessus-reportgen-linux-x64 --help
-   # or for ARM64
-   ./nessus-reportgen-linux-arm64 --help
    
    # Generate a report
    ./nessus-reportgen-linux-x64 generate scan.csv report.xlsx

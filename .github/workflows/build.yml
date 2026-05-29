@@ -15,11 +15,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, windows-latest, macos-latest]
-        arch: [x64, arm64]
-        exclude:
+        include:
+          - os: ubuntu-22.04
+            arch: x64
+            binary_name: nessus-reportgen-linux-x64
+          - os: macos-13  # macOS 13 is the last Intel macOS runner with x64 support
+            arch: x64
+            binary_name: nessus-reportgen-macos-x64
+          - os: macos-latest
+            arch: arm64
+            binary_name: nessus-reportgen-macos-arm64
           - os: windows-latest
-            arch: arm64  # Windows ARM64 support can be added later if needed
+            arch: x64
+            binary_name: nessus-reportgen-windows-x64.exe
 
     defaults:
       run:
@@ -32,7 +40,6 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
-        architecture: ${{ matrix.arch }}
 
     - name: Install Poetry
       uses: snok/install-poetry@v1
@@ -58,18 +65,16 @@ jobs:
       run: |
         cd dist
         if [ "${{ matrix.os }}" = "windows-latest" ]; then
-          mv nessus-reportgen.exe nessus-reportgen-windows-${{ matrix.arch }}.exe
-        elif [ "${{ matrix.os }}" = "macos-latest" ]; then
-          mv nessus-reportgen nessus-reportgen-macos-${{ matrix.arch }}
+          mv nessus-reportgen.exe ${{ matrix.binary_name }}
         else
-          mv nessus-reportgen nessus-reportgen-linux-${{ matrix.arch }}
+          mv nessus-reportgen ${{ matrix.binary_name }}
         fi
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: nessus-reportgen-${{ matrix.os }}-${{ matrix.arch }}
-        path: dist/nessus-reportgen-*
+        name: ${{ matrix.binary_name }}
+        path: dist/${{ matrix.binary_name }}
 
   release:
     needs: build
@@ -88,11 +93,10 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          ./artifacts/nessus-reportgen-ubuntu-22.04-x64/nessus-reportgen-linux-x64
-          ./artifacts/nessus-reportgen-ubuntu-22.04-arm64/nessus-reportgen-linux-arm64
-          ./artifacts/nessus-reportgen-windows-latest-x64/nessus-reportgen-windows-x64.exe
-          ./artifacts/nessus-reportgen-macos-latest-x64/nessus-reportgen-macos-x64
-          ./artifacts/nessus-reportgen-macos-latest-arm64/nessus-reportgen-macos-arm64
+          ./artifacts/nessus-reportgen-linux-x64/nessus-reportgen-linux-x64
+          ./artifacts/nessus-reportgen-macos-x64/nessus-reportgen-macos-x64
+          ./artifacts/nessus-reportgen-macos-arm64/nessus-reportgen-macos-arm64
+          ./artifacts/nessus-reportgen-windows-x64.exe/nessus-reportgen-windows-x64.exe
         draft: false
         prerelease: false
       env:
