@@ -63,7 +63,7 @@ Example usage:
 
 def version_callback(value: bool) -> None:
     if value:
-        typer.echo(f"nessus-reportgen v{__version__}")
+        typer.echo(f"nessus-reportgen {__version__}")
         raise typer.Exit()
 
 

@@ -5,17 +5,21 @@ import sys
 from pathlib import Path
 
 INIT_FILE = Path("src/reportgen/__init__.py")
+PYPROJECT_FILE = Path("pyproject.toml")
 VERSION_PATTERN = re.compile(r'__version__\s*=\s*[\'"]([^\'"]+)[\'"]')
+# Match poetry version field that's NOT indented (top-level)
+POETRY_VERSION_PATTERN = re.compile(r'^version\s*=\s*[\'"]([^\'"]+)[\'"]', re.MULTILINE)
 
 
 def get_current_version() -> str:
-    """Get the current version from __init__.py."""
+    """Get the current version from __init__.py, stripping any leading 'v'."""
     content = INIT_FILE.read_text()
     match = VERSION_PATTERN.search(content)
     if not match:
         print(f"Error: Could not find version in {INIT_FILE}", file=sys.stderr)
         sys.exit(1)
-    return match.group(1)
+    version = match.group(1)
+    return version.lstrip('v')
 
 
 def bump_version(version: str, part: str) -> str:
@@ -39,14 +43,21 @@ def bump_version(version: str, part: str) -> str:
         print(f"Error: Invalid part: {part} (must be major, minor, or patch)", file=sys.stderr)
         sys.exit(1)
 
-    return f"{major}.{minor}.{patch}"
+    return f"v{major}.{minor}.{patch}"
 
 
 def write_version(new_version: str) -> None:
-    """Write the new version back to __init__.py."""
-    content = INIT_FILE.read_text()
-    new_content = VERSION_PATTERN.sub(f'__version__ = "{new_version}"', content)
-    INIT_FILE.write_text(new_content)
+    """Write the new version back to __init__.py and pyproject.toml."""
+    # Update __init__.py
+    init_content = INIT_FILE.read_text()
+    new_init_content = VERSION_PATTERN.sub(f'__version__ = "{new_version}"', init_content)
+    INIT_FILE.write_text(new_init_content)
+
+    # Update pyproject.toml - only top-level version fields
+    pyproject_content = PYPROJECT_FILE.read_text()
+    new_pyproject_content = POETRY_VERSION_PATTERN.sub(f'version = "{new_version}"', pyproject_content)
+    PYPROJECT_FILE.write_text(new_pyproject_content)
+
     print(f"Updated version to {new_version}")
 
 
