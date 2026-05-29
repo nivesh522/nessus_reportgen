@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from enum import Enum
 
 import typer
 from loguru import logger
@@ -17,10 +18,46 @@ except ImportError:
     from reportgen.report import ExcelReportWriter, WordReportWriter, get_theme
     from reportgen.utils import setup_logger, validate_file_path
 
+
+class OutputFormat(str, Enum):
+    AUTO = "auto"
+    EXCEL = "excel"
+    WORD = "word"
+
+
+class ExcelTheme(str, Enum):
+    CORPORATE = "corporate"
+    DARK = "dark"
+
+
+class Severity(str, Enum):
+    INFO = "info"
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
 app = typer.Typer(
     name="nessus-reportgen",
-    help="Enterprise-grade Nessus vulnerability scan report generator",
-    add_completion=False,
+    help="""Enterprise-grade Nessus vulnerability scan report generator.
+
+Converts Nessus CSV exports (.csv) and native Nessus XML files (.nessus) into professional,
+formatted Excel (.xlsx) and Word (.docx) reports.
+
+Supports:
+- Single file or batch directory processing
+- Severity-based filtering
+- Custom Word templates
+- Multiple Excel themes
+
+Example usage:
+  nessus-reportgen generate scan.nessus report.xlsx
+  nessus-reportgen generate scans/ report.docx --template custom-template.docx
+  nessus-reportgen generate scan.csv report.xlsx --min-severity high
+""",
+    add_completion=True,
+    rich_markup_mode="rich",
 )
 
 
@@ -30,34 +67,79 @@ def version_callback(value: bool) -> None:
         raise typer.Exit()
 
 
-@app.callback()
+@app.callback(invoke_without_command=True)
 def main(
+    ctx: typer.Context,
     version: bool | None = typer.Option(
         None,
         "--version",
         "-v",
         callback=version_callback,
         is_eager=True,
-        help="Show version and exit",
+        help="Show version information and exit",
     ),
 ) -> None:
-    pass
+    """Enterprise-grade Nessus vulnerability scan report generator."""
+    if ctx.invoked_subcommand is None:
+        typer.echo(ctx.get_help())
 
 
-@app.command()
+@app.command(
+    help="""Generate a professional report from Nessus scan results.
+
+INPUT_PATH: Path to a single Nessus CSV/XML file or a directory containing multiple files.
+OUTPUT_PATH: Path where the generated report will be saved (.xlsx or .docx).
+"""
+)
 def generate(
-    input_path: str = typer.Argument(..., help="Input file or directory (CSV or Nessus XML)"),
-    output_path: str = typer.Argument(..., help="Output file (.xlsx or .docx)"),
-    format: str = typer.Option("auto", "--format", "-f", help="Output format (auto/excel/word)"),
-    theme: str = typer.Option(
-        "corporate", "--theme", "-t", help="Report theme for Excel (corporate/dark)"
+    input_path: str = typer.Argument(
+        ...,
+        help="Input file or directory (supports .csv and .nessus files)",
+        show_default=False,
     ),
-    template: str | None = typer.Option(None, "--template", help="Word template file (.docx)"),
-    min_severity: str = typer.Option(
-        "info", "--min-severity", help="Minimum severity to include (info/low/medium/high/critical)"
+    output_path: str = typer.Argument(
+        ...,
+        help="Output report file (.xlsx for Excel, .docx for Word)",
+        show_default=False,
     ),
-    verbose: bool = typer.Option(False, "--verbose", help="Enable verbose logging"),
-    log_file: str | None = typer.Option(None, "--log-file", help="Log file path"),
+    format: OutputFormat = typer.Option(
+        OutputFormat.AUTO,
+        "--format",
+        "-f",
+        help="Force output format (auto-detects from file extension by default)",
+        case_sensitive=False,
+    ),
+    theme: ExcelTheme = typer.Option(
+        ExcelTheme.CORPORATE,
+        "--theme",
+        "-t",
+        help="Visual theme for Excel reports (corporate or dark)",
+        case_sensitive=False,
+    ),
+    template: str | None = typer.Option(
+        None,
+        "--template",
+        help="Custom Word template file (.docx) to use for styling",
+        show_default=False,
+    ),
+    min_severity: Severity = typer.Option(
+        Severity.INFO,
+        "--min-severity",
+        help="Minimum severity level to include in the report",
+        case_sensitive=False,
+    ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-V",
+        help="Enable verbose logging output",
+    ),
+    log_file: str | None = typer.Option(
+        None,
+        "--log-file",
+        help="Write logs to the specified file",
+        show_default=False,
+    ),
 ) -> None:
     setup_logger(verbose=verbose, log_file=log_file)
     logger.info("Starting report generation")
@@ -74,9 +156,14 @@ def generate(
         logger.error(f"Invalid input path: {input_path}")
         raise typer.Exit(code=1)
 
-    severity_order = {"info": 0, "low": 1, "medium": 2, "high": 3, "critical": 4}
-    min_sev = min_severity.lower()
-    min_level = severity_order.get(min_sev, 0)
+    severity_order = {
+        Severity.INFO: 0,
+        Severity.LOW: 1,
+        Severity.MEDIUM: 2,
+        Severity.HIGH: 3,
+        Severity.CRITICAL: 4,
+    }
+    min_level = severity_order.get(min_severity, 0)
     filtered_findings = []
     for f in findings:
         sev = f.severity.lower()
@@ -89,20 +176,20 @@ def generate(
     findings = aggregate_findings(findings)
 
     output_ext = output_p.suffix.lower()
-    if format == "auto":
+    if format == OutputFormat.AUTO:
         if output_ext == ".xlsx":
-            fmt = "excel"
+            fmt = OutputFormat.EXCEL
         elif output_ext == ".docx":
-            fmt = "word"
+            fmt = OutputFormat.WORD
         else:
-            fmt = "excel"
+            fmt = OutputFormat.EXCEL
     else:
         fmt = format
 
-    if fmt == "excel":
-        theme_obj = get_theme(theme)
+    if fmt == OutputFormat.EXCEL:
+        theme_obj = get_theme(theme.value)
         writer = ExcelReportWriter(theme_obj)
-    elif fmt == "word":
+    elif fmt == OutputFormat.WORD:
         template_p = Path(template) if template else None
         writer = WordReportWriter(template_p)
     else:

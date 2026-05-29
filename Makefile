@@ -1,4 +1,4 @@
-.PHONY: install install-dev lint format test test-cov clean build build-exe
+.PHONY: install install-dev lint format test test-cov clean build build-exe bump-patch bump-minor bump-major
 
 install:
 	poetry install
@@ -41,3 +41,15 @@ build-exe:
 
 build-exe-spec:
 	poetry run pyinstaller --clean nessus-reportgen.spec
+
+bump-patch:
+	poetry run python bump_version.py patch
+	@echo "Updated version, run 'git add src/reportgen/__init__.py' and commit!"
+
+bump-minor:
+	poetry run python bump_version.py minor
+	@echo "Updated version, run 'git add src/reportgen/__init__.py' and commit!"
+
+bump-major:
+	poetry run python bump_version.py major
+	@echo "Updated version, run 'git add src/reportgen/__init__.py' and commit!"
