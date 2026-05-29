@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-22.04, windows-latest, macos-latest]
 
     defaults:
       run:
@@ -47,7 +47,7 @@ jobs:
 
     - name: Build executable
       run: |
-        poetry run pyinstaller --clean --onefile --name nessus-reportgen src/reportgen/cli.py
+        poetry run pyinstaller --clean --onefile --name nessus-reportgen --paths src main.py
 
     - name: Prepare release assets
       run: |
@@ -83,7 +83,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          ./artifacts/nessus-reportgen-ubuntu-latest/nessus-reportgen-linux
+          ./artifacts/nessus-reportgen-ubuntu-22.04/nessus-reportgen-linux
           ./artifacts/nessus-reportgen-windows-latest/nessus-reportgen-windows.exe
           ./artifacts/nessus-reportgen-macos-latest/nessus-reportgen-macos
         draft: false
