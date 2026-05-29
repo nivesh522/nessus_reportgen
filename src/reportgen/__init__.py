@@ -1,3 +1,3 @@
 """Enterprise-grade Nessus vulnerability scan report generator."""
 
-__version__ = "v0.1.4"
+__version__ = "v1.0.0"
