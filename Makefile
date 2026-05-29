@@ -37,7 +37,7 @@ build:
 	poetry run python -m build
 
 build-exe:
-	poetry run pyinstaller --clean --onefile --name nessus-reportgen src/reportgen/cli.py
+	poetry run pyinstaller --clean --onefile --name nessus-reportgen --paths src main.py
 
 build-exe-spec:
 	poetry run pyinstaller --clean nessus-reportgen.spec
